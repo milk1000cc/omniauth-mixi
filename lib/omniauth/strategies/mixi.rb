@@ -37,6 +37,10 @@ module OmniAuth
                })
       end
 
+      credentials do
+        { "id_token" => access_token['id_token'] }
+      end
+
       extra do
         hash = {}
         hash['raw_info'] = raw_info unless skip_info?
