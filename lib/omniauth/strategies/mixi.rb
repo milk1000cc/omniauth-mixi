@@ -68,7 +68,13 @@ module OmniAuth
               params[:scope] = BASIC_SCOPE
             end
           end
+          params[:server_state] = get_server_state
+          session['omniauth.server_state'] = params[:server_state]
         end
+      end
+
+      def token_params
+        super.merge(:server_state => session.delete('omniauth.server_state'))
       end
 
       private
@@ -107,6 +113,20 @@ module OmniAuth
           end
         end
         prefecture
+      end
+
+      def get_server_state
+        opts = {
+          :body => {
+            'grant_type' => 'server_state',
+            'client_id' => options.client_id
+          },
+          :headers => { 'Content-Type' => 'application/x-www-form-urlencoded' },
+          :raise_errors => true,
+          :parse => true
+        }
+        response = client.request(:post, options.client_options.token_url, opts)
+        response.parsed['server_state']
       end
     end
   end

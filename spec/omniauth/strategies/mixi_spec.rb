@@ -33,6 +33,7 @@ describe OmniAuth::Strategies::Mixi do
       target = OmniAuth::Strategies::Mixi.new(nil, *args).tap do |strategy|
         strategy.stub!(:request).and_return(request)
         strategy.stub!(:session).and_return({})
+        strategy.stub!(:get_server_state)
       end
       target.authorize_params[:scope].should == 'r_profile'
     end
@@ -44,6 +45,7 @@ describe OmniAuth::Strategies::Mixi do
       target = OmniAuth::Strategies::Mixi.new(nil, *args).tap do |strategy|
         strategy.stub!(:request).and_return(request)
         strategy.stub!(:session).and_return({})
+        strategy.stub!(:get_server_state)
       end
       target.authorize_params[:scope].should ==
         'r_profile r_profile_name r_profile_location r_profile_about_me'
@@ -56,6 +58,7 @@ describe OmniAuth::Strategies::Mixi do
       target = OmniAuth::Strategies::Mixi.new(nil, *args).tap do |strategy|
         strategy.stub!(:request).and_return(request)
         strategy.stub!(:session).and_return({})
+        strategy.stub!(:get_server_state)
       end
       target.authorize_params[:scope].should == 'r_profile r_voice'
     end
@@ -67,6 +70,7 @@ describe OmniAuth::Strategies::Mixi do
       target = OmniAuth::Strategies::Mixi.new(nil, *args).tap do |strategy|
         strategy.stub!(:request).and_return(request)
         strategy.stub!(:session).and_return({})
+        strategy.stub!(:get_server_state)
       end
       target.authorize_params[:display].should == 'touch'
     end
@@ -78,8 +82,31 @@ describe OmniAuth::Strategies::Mixi do
       target = OmniAuth::Strategies::Mixi.new(nil, *args).tap do |strategy|
         strategy.stub!(:request).and_return(request)
         strategy.stub!(:session).and_return({})
+        strategy.stub!(:get_server_state)
       end
       target.authorize_params[:display].should == 'touch'
+    end
+
+    it 'should include the server_state parameter' do
+      request = stub('Request')
+      request.stub!(:params).and_return({})
+      target = subject.tap do |strategy|
+        strategy.stub!(:request).and_return(request)
+        strategy.stub!(:session).and_return({})
+        strategy.stub!(:get_server_state).and_return('serverState1')
+      end
+      target.authorize_params[:server_state].should == 'serverState1'
+      target.session['omniauth.server_state'].should == 'serverState1'
+    end
+  end
+
+  describe 'Token params' do
+    it 'should include the server_state parameter' do
+      target = subject.tap do |strategy|
+        strategy.stub!(:session).
+          and_return('omniauth.server_state' => 'serverState1')
+      end
+      target.token_params['server_state'].should == 'serverState1'
     end
   end
 
