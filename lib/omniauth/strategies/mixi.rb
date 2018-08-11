@@ -127,7 +127,7 @@ module OmniAuth
           },
           :headers => { 'Content-Type' => 'application/x-www-form-urlencoded' },
           :raise_errors => true,
-          :parse => true
+          :parse => :json
         }
         response = client.request(:post, options.client_options.token_url, opts)
         response.parsed['server_state']
